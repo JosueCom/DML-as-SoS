@@ -11,7 +11,8 @@ class Company():
     def __init__(self, name:str, 
                  dataset:Dataset, 
                  distribution:th.Tensor, 
-                 model:nn.Module, 
+                 model:nn.Module,
+                 device = th.device("cuda:0" if th.cuda.is_available() else "cpu"),
                  epochs:int = 5, 
                  batch_size = 100,
                  opt = th.optim.Adam,
@@ -21,7 +22,8 @@ class Company():
         self.distribution = distribution
         self.partners = None
         self.partners_request_API = []
-        self.model = model
+        self.device = device
+        self.model = model().to(self.device)
         self.epochs = epochs
         self.batch_size = batch_size
         self.dataloader = DataLoader(self.dataset, self.batch_size, shuffle=True, num_workers=3)
@@ -33,13 +35,13 @@ class Company():
         self.partners_request_API = partners_request_API
 
     def train(self):
-        device = th.device("cuda:0" if th.cuda.is_available() else "cpu")
+        self.model.train()
 
-        for epoch in range(self.epochs):
-            for imgs, labels in self.dataloader:
+        for _ in range(self.epochs):
+            for data, targets in self.dataloader:
                 self.opt.zero_grad()
-                output = self.model(imgs).to(device)
-                loss = self.criterion(output, labels)
+                output = self.model(data.to(self.device))
+                loss = self.criterion(output, targets.to(self.device))
 
                 loss.backward()
                 self.opt.step()
@@ -68,7 +70,21 @@ class Company():
     def update_parameters(self):
         self.model.load_state_dict(self.my_parameters)
 
-    def validate(self, dataset:Dataset):
-        pass
+    def validate(self, test_loader:DataLoader):
+        self.model.eval()
+        test_loss = 0
+        correct = 0
+
+        with th.no_grad():
+            for data, targets in test_loader:
+                data, targets = data.to(self.device), targets.to(self.device)
+                output = self.model(data)
+                test_loss += self.criterion(output, targets).item()  # sum up batch loss
+                pred = output.argmax(dim=1, keepdim=True)
+                correct += pred.eq(targets.view_as(pred)).sum().item()
+
+        test_loss /= len(test_loader.dataset)
+
+        return test_loss
 
     
