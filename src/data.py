@@ -34,15 +34,19 @@ class DatasetManager():
         prob_distribution = th.exp(m.log_prob(inv_perm))
 
         og_sample = m.sample((size,)).to(th.int)
-        targets = lab_perm[og_sample]
+        sampled_targets = lab_perm[og_sample]
 
         dtl = []
+        targets = []
         for lab in self.unique_targets:
-            dtl.append(self.get_data(lab, n=sum(lab==targets)))
+            n = sum(lab==sampled_targets)
 
-        return DatasetSubset(th.cat(dtl, dim=0), targets), prob_distribution
+            dtl.append(self.get_data(lab, n=n))
+            targets.append(th.ones((n,)) * lab)
 
-    def get_data(self, target, n=-1): # return shuffle data given target
+        return DatasetSubset(th.cat(dtl, dim=0), th.cat(targets, dim=0)), prob_distribution
+
+    def get_data(self, target, n=-1): # return shuffled data given target
         n = self.max_per_lab if n <= 0 else n
 
         choices = self.indexes[target][th.randint(self.count[target], (n, ))]
