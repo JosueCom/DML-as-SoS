@@ -11,7 +11,7 @@ class Company():
     def __init__(self, name:str, 
                  dataset:Dataset, 
                  distribution:th.Tensor, 
-                 model:nn.Module,
+                 shared_model:nn.Module,
                  device = th.device("cuda:0" if th.cuda.is_available() else "cpu"),
                  epochs:int = 5, 
                  batch_size = 100,
@@ -23,12 +23,17 @@ class Company():
         self.partners = None
         self.partners_request_API = []
         self.device = device
-        self.model = model().to(self.device)
+        self.model = shared_model
         self.epochs = epochs
         self.batch_size = batch_size
         self.dataloader = DataLoader(self.dataset, self.batch_size, shuffle=True, num_workers=3)
         self.opt = opt(self.model.parameters())
         self.criterion = criterion()
+
+    def __str__(self) -> str:
+        return f"{self.name}:\n \
+                 Distribution = {self.distribution.tolist()}\n\
+                 Neighbors = {self.distribution.tolist()}"
 
     def set_partners(self, partners, partners_request_API) -> None:
         self.partners = partners
