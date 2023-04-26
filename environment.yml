@@ -1,0 +1,13 @@
+name: ml
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pytorch
+  - notebook
+  - matplotlib
+  - pip:
+      - pyvis
