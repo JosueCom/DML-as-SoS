@@ -1,3 +1,4 @@
+from typing import Any, Dict
 import torch as th
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
@@ -20,7 +21,7 @@ class Company():
         self.name = name
         self.dataset = dataset
         self.distribution = distribution
-        self.partners = None
+        self.partners = []
         self.partners_request_API = []
         self.device = device
         self.model = shared_model
@@ -31,11 +32,12 @@ class Company():
         self.criterion = criterion()
 
     def __str__(self) -> str:
-        return f"{self.name}:\n \
-                 Distribution = {self.distribution.tolist()}\n\
-                 Neighbors = {self.distribution.tolist()}"
 
-    def set_partners(self, partners, partners_request_API) -> None:
+        return f"{self.name}:\n \
+                 Distribution (%) = {th.round(self.distribution*100).to(th.int).tolist()}\n\
+                 Neighbors = {[i+1 for i in self.partners]}"
+
+    def set_partners(self, partners:list, partners_request_API:list) -> None:
         self.partners = partners
         self.partners_request_API = partners_request_API
 
@@ -43,7 +45,10 @@ class Company():
         self.model.train()
 
         for _ in range(self.epochs):
-            for data, targets in self.dataloader:
+            for __, ld in enumerate(self.dataloader):
+                data, targets = ld
+
+                data, targets = data.to(self.device), targets.to(self.device)
                 self.opt.zero_grad()
                 output = self.model(data.to(self.device))
                 loss = self.criterion(output, targets.to(self.device))
@@ -51,7 +56,7 @@ class Company():
                 loss.backward()
                 self.opt.step()
 
-    def merge_parameters(self):
+    def merge_parameters(self) -> None:
 
         self.my_parameters = self.request_parameters()
 
@@ -69,7 +74,7 @@ class Company():
             partners_parameters = sum(partners_parameters[key]) / float(len(self.partners))
             self.my_parameters[key] = (self.my_parameters[key] + partners_parameters[key]) / 2.
 
-    def request_parameters(self):
+    def request_parameters(self) -> Dict[str, Any]:
         return self.model.state_dict()
 
     def update_parameters(self):
@@ -81,7 +86,9 @@ class Company():
         correct = 0
 
         with th.no_grad():
-            for data, targets in test_loader:
+            for _, ld in enumerate(test_loader):
+                data, targets = ld
+
                 data, targets = data.to(self.device), targets.to(self.device)
                 output = self.model(data)
                 test_loss += self.criterion(output, targets).item()  # sum up batch loss

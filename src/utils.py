@@ -1,8 +1,8 @@
+import torch as th
 
 """
 Author: Josue N Rivera
 """
 
-def dist_alike_score(dist1, dist2):
-
-    pass
+def d3ls(dist1:th.Tensor, dist2:th.Tensor):
+    return th.mean((dist1 - dist2)**2)
