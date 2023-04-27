@@ -71,8 +71,8 @@ class Company():
                 partners_parameters[key].append(partner_parameters[key])
         
         for key in self.my_parameters:
-            partners_parameters = sum(partners_parameters[key]) / float(len(self.partners))
-            self.my_parameters[key] = (self.my_parameters[key] + partners_parameters[key]) / 2.
+            par2avg = sum(partners_parameters[key]) / float(len(self.partners))
+            self.my_parameters[key] = (self.my_parameters[key] + par2avg) / 2
 
     def request_parameters(self) -> Dict[str, Any]:
         return self.model.state_dict()
