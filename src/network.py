@@ -15,7 +15,7 @@ class SoS():
     def __init__(self, companies:List[Company], notebook=True) -> None:
 
         self.companies = companies
-        self.vis_net = Network(notebook=True, cdn_resources='remote')
+        self.vis_net = Network(notebook=True, directed=True, cdn_resources='remote')
 
         for i in range(len(self.companies)):
             self.vis_net.add_node(i, 
@@ -24,7 +24,7 @@ class SoS():
 
     def set_partners(self, partners:list):
 
-        self.vis_net = Network(notebook=True, cdn_resources='remote')
+        self.vis_net = Network(notebook=True, directed=True, cdn_resources='remote')
 
         for i in range(len(self.companies)):
             self.companies[i].partners = partners[i]
