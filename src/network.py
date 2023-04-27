@@ -37,7 +37,7 @@ class SoS():
             self.companies[i].set_partners(partners[i], apis)
 
             for j in partners[i]:
-                self.vis_net.add_edge(i, j)
+                self.vis_net.add_edge(j, i)
 
     def train(self) -> None:
         for company in self.companies:
