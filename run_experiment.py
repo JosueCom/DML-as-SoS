@@ -15,7 +15,7 @@ Author: Josue N Rivera
 """
 
 ## hyper-paramaters
-ntrial = 1000
+ntrial = 1
 ncompanies = 4
 ncycle = 2
 epochs_per_train = 3
@@ -36,10 +36,10 @@ if __name__ == '__main__':
             "training dataset size": train_size,
             "validation dataset size": val_size,
             "save": {
-                "path": "src\\data\\log\\",
+                "path": "src\\data\\",
                 "format": "MONTH DAY YEAR (START_HOUR;START_MINUTE - END_HOUR;END_MINUTE) - TYPE",
                 "logs": True,
-                "printless": True,
+                "printless": False,
                 "progress rate": 5
             }
         }

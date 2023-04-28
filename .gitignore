@@ -1,5 +1,6 @@
 # Custom
-data/
+log/
+MNIST/
 .vscode/
 .rug_*
 
