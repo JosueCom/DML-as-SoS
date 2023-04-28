@@ -15,10 +15,12 @@ Author: Josue N Rivera
 """
 
 ## hyper-paramaters
-ntrial = 1
+ntrial = 1000
 ncompanies = 4
 ncycle = 2
 epochs_per_train = 3
+train_size = 200
+val_size = 500
 
 ## logger
 d3ls_scores = []
@@ -31,11 +33,13 @@ if __name__ == '__main__':
             'number of companies': ncompanies,
             "number of training-sharing cycles": ncycle,
             "number of epochs in indpendent training": epochs_per_train,
+            "training dataset size": train_size,
+            "validation dataset size": val_size,
             "save": {
                 "path": "src\\data\\log\\",
                 "format": "MONTH DAY YEAR (START_HOUR;START_MINUTE - END_HOUR;END_MINUTE) - TYPE",
                 "logs": True,
-                "printless": False,
+                "printless": True,
                 "progress rate": 5
             }
         }
@@ -47,7 +51,7 @@ if __name__ == '__main__':
                             transform=transforms.ToTensor(), 
                             download=True, train=False)
     dtManager = DatasetManager(mnist_test)
-    dt, _ = dtManager.get_dataset(size=1000, distribution=Uniform(0, 10))
+    dt, _ = dtManager.get_dataset(size=val_size, distribution=Uniform(0, 10))
     loader_test = DataLoader(dt, 100, shuffle=True, num_workers=3)
 
     # Training dataset
@@ -88,7 +92,7 @@ if __name__ == '__main__':
         companies = []
 
         for i in range(ncompanies):
-            dt, distribution = dtManager.get_dataset()    
+            dt, distribution = dtManager.get_dataset(size = train_size)    
             companies.append(
                 Company("Company " + str(i+1), 
                         dataset = dt,
