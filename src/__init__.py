@@ -1,6 +1,6 @@
 
 from .company import Company
-from .data import DatasetManager
+from .dataset import DatasetManager
 from .network import SoS
 
 """

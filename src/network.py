@@ -61,4 +61,4 @@ class SoS():
         return [company.name for company in self.companies]
 
     def get_distribution(self) -> th.Tensor:
-        return [company.distribution for company in self.companies]
+        return [company.distribution.tolist() for company in self.companies]
