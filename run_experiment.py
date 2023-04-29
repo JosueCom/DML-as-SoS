@@ -52,7 +52,7 @@ if __name__ == '__main__':
                             download=True, train=False)
     dtManager = DatasetManager(mnist_test)
     dt, _ = dtManager.get_dataset(size=val_size, distribution=Uniform(0, 10))
-    loader_test = DataLoader(dt, 25, shuffle=True, num_workers=3)
+    loader_test = DataLoader(dt, 50, shuffle=True, num_workers=3)
 
     # Training dataset
     mnist_train = MNIST("src/data/", 

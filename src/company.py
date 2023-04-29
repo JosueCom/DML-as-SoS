@@ -15,7 +15,7 @@ class Company():
                  shared_model:nn.Module,
                  device = th.device("cuda:0" if th.cuda.is_available() else "cpu"),
                  epochs:int = 5, 
-                 batch_size = 25,
+                 batch_size = 50,
                  opt = th.optim.SGD,
                  criterion = th.nn.CrossEntropyLoss) -> None:
         self.name = name
@@ -59,6 +59,9 @@ class Company():
     def merge_parameters(self) -> None:
 
         self.my_parameters = self.request_parameters()
+
+        if len(self.partners) <= 0:
+            return
 
         partners_parameters = {}
         for key in self.my_parameters:
