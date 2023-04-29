@@ -19,8 +19,8 @@ ntrial = 1
 ncompanies = 4
 ncycle = 2
 epochs_per_train = 3
-train_size = 200
-val_size = 500
+train_size = 100
+val_size = 100
 
 ## logger
 d3ls_scores = []

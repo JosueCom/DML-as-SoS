@@ -69,6 +69,8 @@ class Logger():
         if self.options['logs']:
             fn = os.path.join(self.options['path'], 'logs', self.filename.replace('TYPE', 'LOGS')) + '.json'
             
+            os.makedirs(os.path.dirname(fn), exist_ok=True)
+            
             self.print(f"Data logs saved to \"{fn}\"")
 
             with open(fn, 'w') as f:
