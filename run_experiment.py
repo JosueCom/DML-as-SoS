@@ -15,7 +15,7 @@ Author: Josue N Rivera
 """
 
 ## hyper-paramaters
-ntrial = 1
+ntrial = 1000
 ncompanies = 4
 ncycle = 2
 epochs_per_train = 3
