@@ -15,8 +15,8 @@ class Company():
                  shared_model:nn.Module,
                  device = th.device("cuda:0" if th.cuda.is_available() else "cpu"),
                  epochs:int = 5, 
-                 batch_size = 100,
-                 opt = th.optim.Adam,
+                 batch_size = 25,
+                 opt = th.optim.SGD,
                  criterion = th.nn.CrossEntropyLoss) -> None:
         self.name = name
         self.dataset = dataset
@@ -28,7 +28,7 @@ class Company():
         self.epochs = epochs
         self.batch_size = batch_size
         self.dataloader = DataLoader(self.dataset, self.batch_size, shuffle=True, num_workers=3)
-        self.opt = opt(self.model.parameters())
+        self.opt = opt(self.model.parameters(), lr=0.001)
         self.criterion = criterion()
 
     def __str__(self) -> str:

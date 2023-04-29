@@ -27,12 +27,12 @@ d3ls_scores = []
 accuracies = []
 if __name__ == '__main__':
     logger = Logger(
-        log_keys=['d3ls_scores', 'accuracies', 'avg accuracy', 'final accuracy', 'distributions', 'adjacency'],
+        log_keys=['d3ls_scores', 'accuracies', 'avg accuracy', 'final accuracy', 'distributions', 'partners'],
         config={
             "number of trials": ntrial,
             'number of companies': ncompanies,
             "number of training-sharing cycles": ncycle,
-            "number of epochs in indpendent training": epochs_per_train,
+            "number of epochs in independent training": epochs_per_train,
             "training dataset size": train_size,
             "validation dataset size": val_size,
             "save": {
@@ -52,7 +52,7 @@ if __name__ == '__main__':
                             download=True, train=False)
     dtManager = DatasetManager(mnist_test)
     dt, _ = dtManager.get_dataset(size=val_size, distribution=Uniform(0, 10))
-    loader_test = DataLoader(dt, 100, shuffle=True, num_workers=3)
+    loader_test = DataLoader(dt, 25, shuffle=True, num_workers=3)
 
     # Training dataset
     mnist_train = MNIST("src/data/", 
@@ -70,17 +70,10 @@ if __name__ == '__main__':
             self.fc2 = nn.Linear(128, 10)
 
         def forward(self, x) -> th.Tensor:
-            x = self.conv1(x.unsqueeze(1))
-            x = th.relu(x)
-            x = self.conv2(x)
-            x = th.relu(x)
-            x = th.max_pool2d(x, 2)
-            x = th.flatten(x, 1)
-            x = self.fc1(x)
-            x = th.relu(x)
-            x = self.fc2(x)
-            output = th.log_softmax(x, dim=1)
-            return output
+            x = th.relu(self.conv1(x.unsqueeze(1)))
+            x = th.max_pool2d(th.relu(self.conv2(x)), 2)
+            x = th.relu(self.fc1(th.flatten(x, 1)))
+            return th.log_softmax(self.fc2(x), dim=1)
 
     device = th.device("cuda:0" if th.cuda.is_available() else "cpu")
 
@@ -106,15 +99,17 @@ if __name__ == '__main__':
         sos = SoS(companies)
         logger.log('distributions', sos.get_distribution())
 
-        partners = th.bernoulli(bernoulli_prob_mask).to(th.int).tolist()
+        partners = th.bernoulli(bernoulli_prob_mask).to(th.int)
+        partners = [th.nonzero(parts, as_tuple=True)[0].tolist() for parts in partners] 
+
         sos.set_partners(partners)
-        logger.log('adjacency', partners)
+        logger.log('partners', partners)
 
         score = 0.0
         for company in sos.companies:
             score += sum([d3ls(company.distribution, sos.companies[i].distribution).item() for i in company.partners])
 
-        score /= ncompanies*(ncompanies - 1)
+        score /= (ncompanies*(ncompanies - 1))
         
         logger.log('d3ls_scores', score)
 
