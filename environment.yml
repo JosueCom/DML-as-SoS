@@ -9,5 +9,6 @@ dependencies:
   - pytorch
   - notebook
   - matplotlib
+  - torchvision
   - pip:
       - pyvis
